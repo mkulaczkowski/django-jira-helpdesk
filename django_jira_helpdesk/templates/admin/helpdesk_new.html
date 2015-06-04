@@ -1,8 +1,8 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/helpdesk.html" %}
 {% load i18n admin_static %}
 
 {% block extrastyle %}
-{{ block.super }}
+    {{ block.super }}
 {% endblock %}
 
 {% block coltype %}colMS{% endblock %}
@@ -13,100 +13,101 @@
 
 {% block content %}
 
-<div id="content-main" class="inner-two-columns" class="row-fluid" >
-	<div class="span12">
-		<h2>New Issue</h2>
-		<p>
-			&nbsp;
-		</p>
-		<form enctype="multipart/form-data" action="" method="post" id="entry_form" class="form-horizontal">
-			<div class="inner-center-column">
+    <div id="content-main" class="inner-two-columns" class="row-fluid">
+        <div class="span12">
+            <h2>New Issue</h2>
 
-				<div class="tab-content tab-content-main" style="box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07);">
-					{% if form.errors %}
-					<div class="alert alert-error">
-						Please correct the errors below.
-					</div>
-					{% endif %}
-					<fieldset class="module aligned first suit-tab suit-tab-general show">
-						<div class="control-group form-row field-slug {% if form.module_name.errors %}error errors{% endif %}">
-							<div>
-								<div class="control-label">
-									<label class="required" for="id_status">Module:</label>
-								</div>
-								<div class="controls">
-									{{form.module_name}}
-									<span class="help-inline"> {{form.module_name.errors}} </span>
-								</div>
-							</div>
-						</div>
-						<div class="control-group form-row field-slug {% if form.name.errors %}error errors{% endif %}">
-							{% csrf_token %}
-							<div>
-								<div class="control-label">
-									<label class="required" for="id_status">Name:</label>
-								</div>
-								<div class="controls">
-									{{form.name}}
-									<span class="help-inline"> {{form.name.errors}} </span>
-								</div>
-							</div>
-						</div>
-						<div class="control-group form-row field-slug {% if form.priority.errors %}error errors{% endif %}">
-							<div>
-								<div class="control-label">
-									<label class="required" for="id_priority">Priority:</label>
-								</div>
-								<div class="controls">
-									{{form.priority}}
-									<span class="help-inline"> {{form.priority.errors}} </span>
-								</div>
-							</div>
-						</div>
-						<div class="control-group form-row field-slug {% if form.type.errors %}error errors{% endif %}">
-							<div>
-								<div class="control-label">
-									<label class="required" for="id_type">Type:</label>
-								</div>
-								<div class="controls">
-									{{form.type}}
-									<span class="help-inline"> {{form.type.errors}}</span>
-								</div>
-							</div>
-						</div>
-						<div class="control-group form-row field-slug {% if form.description.errors %}error errors{% endif %}">
-							<div>
-								<div class="control-label">
-									<label class="required" for="id_desc">Description:</label>
-								</div>
-								<div class="controls">
-									{{form.description}}
-									<span class="help-inline"> {{form.description.errors}} </span>
-								</div>
-							</div>
-						</div>
-						<div class="control-group form-row field-slug">
-							<div>
-								<div class="control-label"></div>
-								<div class="controls">
-									<button type="submit" class="btn btn-high btn-info">
-										Submit
-									</button>
-								</div>
-							</div>
-						</div>
-					</fieldset>
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
-<div style="display: none">{{e}} {{f}}</div>
-<style type="text/css" media="screen">
-    .control-label {
-        border-bottom: 1px solid #EDEDED !important;
-    }
-</style>
+            <p>
+                &nbsp;
+            </p>
+
+            <form enctype="multipart/form-data" action="" method="post" id="entry_form" class="form-horizontal">
+                <div class="inner-center-column">
+
+                    <div class="tab-content tab-content-main" style="box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07);">
+                        {% if form.errors %}
+                            <div class="alert alert-error">
+                                Please correct the errors below.
+                            </div>
+                        {% endif %}
+                        <fieldset class="module aligned first suit-tab suit-tab-general show">
+                            <div class="control-group form-row field-slug {% if form.module_name.errors %}error errors{% endif %}">
+                                <div>
+                                    <label class="required" for="id_status">Module:</label>
+
+                                    <div class="controls">
+                                        {{ form.module_name }}
+                                        <span class="help-inline"> {{ form.module_name.errors }} </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group form-row field-slug {% if form.name.errors %}error errors{% endif %}">
+                                {% csrf_token %}
+                                <div>
+                                    <div>
+                                        <label class="required" for="id_status">Name:</label>
+                                    </div>
+                                    <div class="controls">
+                                        {{ form.name }}
+                                        <span class="help-inline"> {{ form.name.errors }} </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group form-row field-slug {% if form.priority.errors %}error errors{% endif %}">
+                                <div>
+                                    <div>
+                                        <label class="required" for="id_priority">Priority:</label>
+                                    </div>
+                                    <div class="controls">
+                                        {{ form.priority }}
+                                        <span class="help-inline"> {{ form.priority.errors }} </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group form-row field-slug {% if form.type.errors %}error errors{% endif %}">
+                                <div>
+                                    <div>
+                                        <label class="required" for="id_type">Type:</label>
+                                    </div>
+                                    <div class="controls">
+                                        {{ form.type }}
+                                        <span class="help-inline"> {{ form.type.errors }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group form-row field-slug {% if form.description.errors %}error errors{% endif %}">
+                                <div>
+                                    <div>
+                                        <label class="required" for="id_desc">Description:</label>
+                                    </div>
+                                    <div class="controls">
+                                        {{ form.description }}
+                                        <span class="help-inline"> {{ form.description.errors }} </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group form-row field-slug">
+                                <div>
+                                    <div></div>
+                                    <div class="controls">
+                                        <button type="submit" class="btn btn-high btn-info">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div style="display: none">{{ e }} {{ f }}</div>
+    <style type="text/css" media="screen">
+        .control-label {
+            border-bottom: 1px solid #EDEDED !important;
+        }
+    </style>
 {% endblock %}
 
 {% block sidebar %}
