@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 #Django Imports
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -14,6 +15,7 @@ from django_jira_helpdesk.utils import get_jira, sort_issues, get_transitions_id
 
 __author__ = 'Michael Kulaczkowski'
 
+logger = logging.getLogger(__name__)
 
 @login_required
 @never_cache
@@ -23,7 +25,8 @@ def admin_helpdesk_view(request):
         issues = jira.search_issues('project=' + settings.JIRA_PROJECT_KEY)
         for issue in issues:
             issue.comments = jira.comments(issue)[-3:][::-1]
-    except:
+    except Exception as ex:
+        logger.error('Cannot pull issues from JIRA: ' + str(ex))
         issues = []
 
     if 'o' in request.GET:
@@ -53,6 +56,7 @@ def new_issue(request):
                 new_issue = jira.create_issue(fields=issue_dict)
                 return redirect(reverse('admin_helpdesk_view'))
             except Exception as ex:
+                logger.error('Error during new issue creation: ' +str(ex))
                 issue_form = None
     else:
         issue_form = IssueForm()
@@ -97,6 +101,7 @@ def admin_helpdesk_issue_view(request, issue_slug):
             issue_form = IssueForm(data)
     except Exception as ex:
         e = ex
+        logger.error('Error during JIRA main view generation: ' + str(ex))
     context = {'issue': issue, 'commnets': commnets, 'form': issue_form, 'e': e, 'a': a, 'file_form': SimpleFileForm(), 'can_reopen': can_reopen, 'can_close': can_close}
     return render_to_response('admin/helpdesk_detail.html', context, context_instance=RequestContext(request))
 
@@ -122,6 +127,7 @@ def upload_jira(request):
                 return HttpResponse(json.dumps(response_data), content_type="application/json")
             except Exception as ex:
                 response_data['ex'] = ex
+                logger.error('Error during helpdesk file upload: ' + str(ex))
                 upload.delete()
 
     response_data['status'] = "error"
@@ -148,7 +154,8 @@ def add_comment(request):
             comment_text = request.POST['comment_text'] + user_added(request.user)
             jira.add_comment(request.POST['issue_slug'], comment_text)
             added_status = 'OK'
-        except:
+        except Exception as ex:
+            logger.error('Error during adding new comment: ' + str(ex))
             comment_text = ''
             added_status = 'ERROR'
     response_data = {'comment': comment_text, 'status': added_status}
@@ -174,6 +181,7 @@ def change_issue(request, issue_status):
     except Exception as ex:
         response_data['error'] = ex
         response_data['status'] = 'error'
+        logger.error('Error during attempt to change issue status: ' + str(ex))
     return response_data
 
 

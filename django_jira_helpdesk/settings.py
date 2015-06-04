@@ -1,10 +1,5 @@
 __author__ = 'Gorman'
 
-JIRA_PROJECT_KEY = 'ECHELP'
-JIRA_URL = 'http://83.144.104.54:8080/'
-JIRA_USERNAME = 'helpdesk'
-JIRA_PASSWORD = 't0eS%sy|f9QFbTOg"QMK'
-
 
 TYPE_CHOICES = (
                 ('Bug', 'Bug'),

@@ -1,6 +1,6 @@
 from django import forms
-from django_jira.models.files_upload import Upload
-from django_jira.settings import MODULE_CHOICES, TYPE_CHOICES, PRIORITY_CHOICES
+from django_jira_helpdesk.models.files_upload import Upload
+from django_jira_helpdesk.settings import MODULE_CHOICES, TYPE_CHOICES, PRIORITY_CHOICES
 
 
 class IssueForm(forms.Form):

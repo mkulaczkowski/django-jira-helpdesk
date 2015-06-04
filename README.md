@@ -2,6 +2,9 @@
 Django Admin App that allows staff users to post &amp; track issues on JIRA without having actual access to it. 
 
 #Installation
+First install jira-python client: 
+For more info go to: http://jira-python.readthedocs.org/en/latest/
+	$pip install jira
 Please add "django_jira_helpdesk" to INSTALLED_APPS after "django.contrib.admin"
 
 In URLS please add "url(r'^admin/', include('django_jira_helpdesk.urls')),"
@@ -9,10 +12,9 @@ before "url(r'^admin/', include(admin.site.urls)),"
 
 After successful installation please set the following in your settings file:
 
-JIRA_PROJECT_KEY = 'key of project in jira'
-JIRA_URL = 'url of your JIRA with port'
-#example: 'http://127.0.0.1:8080/'
-JIRA_USERNAME = 'JIRA user you want to use"
+	JIRA_PROJECT_KEY = 'key of project in jira'
+	JIRA_URL = 'url of your JIRA with port' - example: 'http://127.0.0.1:8080/'
+	JIRA_USERNAME = 'JIRA user you want to use"
 
 You can also specify app or site parts that the issue is about.
 
