@@ -1,0 +1,129 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static date_extras %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link type="text/css" rel="stylesheet" href="{{STATIC_URL}}tooltip/jquery.qtip.min.css" />
+
+{% endblock %}
+{% block extrajs %}
+{{ block.super }}
+<script type="text/javascript" src="{{STATIC_URL}}tooltip/jquery.qtip.min.js"></script>
+{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+{% block bodyclass %}dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% block content %}
+<div id="content-main" class="row-fluid" >
+	<div class="span12">
+		<h2 style="float: left">Helpdesk - Beta</h2>
+		<div class="object-tools">
+			<a href="{% url 'new_issue' %}" class="btn btn-success add_issue"> <i class="icon-plus-sign icon-white"></i>&nbsp;
+			Add Issue </a>
+		</div>
+		<div class="object-tools">
+			<a href="" class="btn btn-info close-issue-btn"> <i class="icon-remove-circle icon-white"></i>&nbsp; <span>Show closed</span> </a>
+		</div>
+		<div class="object-tools">
+			<a href="" class="btn btn-info comment-issue-btn"> <i class="icon-list icon-white"></i>&nbsp; <span>Hide comments</span> </a>
+		</div>
+		<p>
+			&nbsp;
+		</p>
+		<table id="result_list" class="table table-striped table-bordered table-hover table-condensed">
+			<thead>
+				<tr>
+					<th scope="col" class="title-column sortable column-title">
+					<div class="text">
+						<a href="?o=1">Issue</a>
+					</div></th>
+					<th scope="col" class="title-column sortable column-title">
+					<div class="text">
+						<a href="?o=2">Status</a>
+					</div></th>
+					<th scope="col" class="title-column sortable column-title">
+					<div class="text">
+						<a href="?o=3">Priority</a>
+					</div></th>
+					<th scope="col" class="title-column sortable column-title">
+					<div class="text">
+						<a href="?o=4">Type</a>
+					</div></th>
+					<th scope="col" class="title-column sortable column-title">
+					<div class="text">
+						<a href="?o=5">Description</a>
+					</div></th>
+					<th scope="col" colspan="2" class="title-column column-title">
+					<div class="text">
+						Last coments
+					</div></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for issue in issues %}
+				<tr class="row{{forloop.counter}} {{issue.fields.status.name}}" {% if issue.fields.status.name == 'Closed' %}style="display: none"{% endif %}>
+					<td width="10%"><a href="{% url 'admin_helpdesk_issue_view' issue.key %}">{{issue.fields.summary}}</a></td>
+					<td width="10%" style="{{issue.fields.status.name|style_jira}}">{{issue.fields.status.name}}</td>
+					<td width="10%" style="color: {{issue.fields.priority.name|jira_color}}"><strong>{{issue.fields.priority.name}}</strong></td>
+					<td width="10%" >{{issue.fields.issuetype.name}}</td>
+					<td width="10%" >{{issue.fields.description|truncatechars:50 }}</td>
+					<td width="10%" >{{issue.fields.updated|date_jira }}</td>
+					<td width="25%" data-toggle="tooltip" data-placement="bottom" class="content-comment">Comments<span style="">
+						<div >
+							{% for comm in issue.comments %}
+							<p>
+							<strong>Added {{comm.body|created_jira_user}} on: {{comm.created|date_jira}}</strong>
+							<br>
+							{{comm.body|comment_jira|safe}}
+							</p>
+							{% endfor %}
+						</div> </span></td>
+				</tr>
+				{% empty %}
+				<tr class="row1">
+					<th rowspan="2">No issues added</th>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+
+		$('.close-issue-btn').click(function(e) {
+			xtml = $(this).find('span').html();
+			console.log(xtml);
+			e.preventDefault();
+			if (xtml == "Show closed") {
+				$(this).find('span').html('Hide closed');
+				$('.Closed').show();
+			} else {
+				$(this).find('span').html('Show closed');
+				$('.Closed').hide();
+
+			}
+		});
+		$('.comment-issue-btn').click(function(e) {
+			xtml = $(this).find('span').html();
+			console.log(xtml);
+			e.preventDefault();
+			if (xtml == "Hide comments") {
+				$(this).find('span').html('Show comments');
+				$('.content-comment').hide();
+			} else {
+				$(this).find('span').html('Hide comments');
+				$('.content-comment').show();
+
+			}
+		});
+		
+		
+	});
+
+</script>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

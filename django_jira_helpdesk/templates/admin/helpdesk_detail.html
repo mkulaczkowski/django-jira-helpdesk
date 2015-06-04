@@ -1,0 +1,309 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static date_extras %}
+
+{% block extrastyle %}
+{{ block.super }}
+{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+<div id="content-main" class="inner-two-columns" class="row-fluid" >
+	<div class="span12">
+		<h2>Helpdesk Issue: {{issue.fields.summary}}</h2>
+		<p>
+			&nbsp;
+			<div style="display: none">
+				{{e}} {{a}}
+			</div>
+		</p>
+		<div class="inner-right-column">
+			<h3>Reported by:</h3>
+			<ul class="box menu-box">
+				<li>
+					<a href="javascript:void(0);" style="cursor:default" class="historylink"><i class="icon-search icon-alpha75"></i>Eastern Consolidated</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" style="cursor:default" class="historylink"><i class=" "></i><strong>created on:</strong><br>{{issue.fields.created|date_jira}}</a>
+				</li>
+			</ul>
+			<h3>Assignee:</h3>
+			<ul class="box menu-box">
+				<li>
+					<a href="javascript:void(0);" style="cursor:default" class="historylink"><i class="icon-eye-open icon-alpha75"></i>{{issue.fields.assignee.displayName}}</a>
+				</li>
+			</ul>
+			<h3>Actions:</h3>
+			{% if can_reopen %}
+			<div class="comment-box-in">
+				<a href="javascript:void(0);" class="btn btn-high btn-info reopen_issue">Reopen Issue</a>
+			</div>
+			{% endif %}
+			{% if can_close %}
+			<div class="comment-box-in">
+				<a href="javascript:void(0);" class="btn btn-high btn-info close_issue">Close Issue</a>
+			</div>
+			{% endif %}
+		</div>
+		<form enctype="multipart/form-data" action="" method="post" id="entry_form" class="form-horizontal">
+			<div class="inner-center-column">
+				{% csrf_token %}
+				<div class="tab-content tab-content-main" style="box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07);">
+					<fieldset class="module aligned first suit-tab suit-tab-general show">
+						<div class="control-group form-row field-slug ">
+							<div>
+								<div class="control-label">
+									<label class="required" for="id_status">Status:</label>
+								</div>
+								<div class="controls controls-status">
+									<p>
+										{{issue.fields.status.name}}
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="control-group form-row field-slug {% if form.name.errors %}error errors{% endif %}">
+							<div>
+								<div class="control-label">
+									<label class="required" for="id_status">Summary:</label>
+								</div>
+								<div class="controls">
+									{{form.name}}
+									<span class="help-inline"> {{form.name.errors}} </span>
+								</div>
+							</div>
+						</div>
+						<div class="control-group form-row field-slug {% if form.priority.errors %}error errors{% endif %}">
+							<div>
+								<div class="control-label">
+									<label class="required" for="id_priority">Priority:</label>
+								</div>
+								<div class="controls">
+									{{form.priority}}
+									<span class="help-inline"> {{form.priority.errors}} </span>
+								</div>
+							</div>
+						</div>
+						<div class="control-group form-row field-slug {% if form.type.errors %}error errors{% endif %}">
+							<div>
+								<div class="control-label">
+									<label class="required" for="id_type">Type:</label>
+								</div>
+								<div class="controls">
+									{{form.type}}
+									<span class="help-inline"> {{form.type.errors}} </span>
+								</div>
+							</div>
+						</div>
+						<div class="control-group form-row field-slug {% if form.description.errors %}error errors{% endif %}">
+							<div>
+								<div class="control-label">
+									<label class="required" for="id_desc">Description:</label>
+								</div>
+								<div class="controls">
+									{{form.description}}
+									<span class="help-inline"> {{form.description.errors}} </span>
+								</div>
+							</div>
+						</div>
+						<div class="control-group form-row field-slug">
+							<div>
+								<div class="control-label"></div>
+								<div class="controls">
+									<button type="submit" disabled="disabled" class="btn btn-high btn-info">
+										Submit
+									</button>
+									<p>Editing temporary disabled - you can post comments</p>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+		</form>
+		<h2 class="legend">Last comments: </h2>
+		<div class="tab-content tab-content-main inner-center-column">
+			<div class="comment-box-in">
+				<div class="boxes-f">
+					{% for comment in commnets reversed %}
+					<div>
+						<p>
+							<strong>Added {{comment.body|created_jira_user}} on: {{comment.created|date_jira}}</strong>
+							<br>
+							{{comment.body|comment_jira|safe}}
+						</p>
+					</div>
+					{% endfor %}
+				</div>
+				<form action="" method="post" style="width: 45%; float: left">
+					<div>
+						<textarea id="textarea_com" placeholder="Commnet..."></textarea>
+					</div>
+					<div>
+						<button id="submit-comment" type="submit" class="btn btn-high btn-info">
+							Submit comment
+						</button>
+					</div>
+				</form>
+				<form id="file-form" method="post" enctype="multipart/form-data" style="width: 45%; float: left">
+					{% csrf_token %}
+					<div style="margin-bottom: 5px;">{{file_form.file}}</div>
+					<input name="issue_slug" type="hidden" value='{{issue.key}}'/>
+					<button id="submit-file-form" type="submit" class="btn btn-high btn-info" disable>
+						Save file
+					</button>
+				</form>
+				<div style="clear: both"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="http://malsup.github.com/jquery.form.js"></script>
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+		$('#id_name').attr('readonly', true);
+		$('#id_priority').attr('readonly', true);
+		$('#id_type').attr('readonly', true);
+		$('#id_description').attr('readonly', true);
+		
+		$('#id_name').attr('disabled', true);
+		$('#id_priority').attr('disabled', true);
+		$('#id_type').attr('disabled', true);
+		$('#id_description').attr('disabled', true);
+		
+		options = {
+			url : '{% url "upload_jira" %}',
+			complete: function(pased_data){
+				data = $.parseJSON(pased_data.responseText);
+				if(data['status'] == 'success'){
+					$('.boxes-f').prepend('<div><p><strong>Added Now:</strong><br><a href="' + data['fileLink'] + '">' + data['fileLink'] + '</a></p></div>');
+					$('#id_file').val('');
+				}else{
+					alert('Adding file field, Try again later');
+				}
+			}
+		}
+
+		$('#submit-file-form').click(function(e) {
+			e.preventDefault()
+			$('#file-form').ajaxSubmit(options);
+		});
+		
+		$('.reopen_issue').click(function(e){
+			e.preventDefault();
+			that = this;
+			data = {
+				'issue_slug' : '{{issue.key}}',
+				'csrfmiddlewaretoken' : '{{csrf_token}}'
+			}
+			$.ajax({
+				url : '{% url "reopen_issue" %}',
+				data : data,
+				type : 'POST',
+				complete : function(data) {
+					new_data = $.parseJSON(data.responseText);
+					if (new_data['status'] == 'OK') {
+						$('#content-main .span12').prepend('<div class="alert alert-success">Issue reopend.</div>');
+						$(that).attr('disabled', true);
+						$('.controls-status p').html('Reopend');
+					}else{
+						alert('Adding comment field, Try again later');
+					}
+				}
+			});
+		});
+		
+		$('.close_issue').click(function(e){
+			e.preventDefault();
+			that = this;
+			data = {
+				'issue_slug' : '{{issue.key}}',
+				'csrfmiddlewaretoken' : '{{csrf_token}}'
+			}
+			$.ajax({
+				url : '{% url "close_issue" %}',
+				data : data,
+				type : 'POST',
+				complete : function(data) {
+					new_data = $.parseJSON(data.responseText);
+					if (new_data['status'] == 'OK') {
+						$('#content-main .span12').prepend('<div class="alert alert-success">Issue closed.</div>');
+						$('.controls-status p').html('Closed');
+						$(that).attr('disabled', true);
+					}else{
+						alert('Adding comment field, Try again later');
+					}
+				}
+			});
+		});
+
+		$('#submit-comment').click(function(e) {
+			e.preventDefault();
+			data = {
+				'comment_text' : $('#textarea_com').val(),
+				'issue_slug' : '{{issue.key}}',
+				'csrfmiddlewaretoken' : '{{csrf_token}}'
+			}
+			$.ajax({
+				url : '{% url "add_comment" %}',
+				data : data,
+				type : 'POST',
+				complete : function(data) {
+					new_data = $.parseJSON(data.responseText);
+					console.log(new_data);
+
+					if (new_data['status'] == 'OK') {
+						$('.boxes-f').prepend('<div><p><strong>Added Now:</strong><br>' + new_data['comment'] + '</p></div>');
+						$('#textarea_com').val('');
+					} else {
+						alert('Adding comment field, Try again later');
+					}
+				}
+			})
+			return false;
+		});
+	});
+
+</script>
+<style type="text/css" media="screen">
+    .boxes-f {
+        margin-bottom: 20px;
+    }
+    .boxes-f > div {
+        padding: 10px 20px 5px 10px;
+        border-bottom: 1px solid #EDEDED;
+    }
+    .control-label {
+        border-bottom: 1px solid #EDEDED !important;
+    }
+    .comment-box-in {
+        padding: 10px 20px 5px 10px;
+        background: #FFF;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07);
+        -moz-background-clip: padding;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        -webkit-border-top-left-radius: 4px;
+        -moz-border-radius-topleft: 4px;
+        border-top-left-radius: 4px;
+        -webkit-border-top-right-radius: 4px;
+        -moz-border-radius-topright: 4px;
+        border-top-right-radius: 4px;
+        -webkit-border-bottom-left-radius: 4px;
+        -moz-border-radius-bottomleft: 4px;
+        border-bottom-left-radius: 4px;
+        -webkit-border-bottom-right-radius: 4px;
+        -moz-border-radius-bottomright: 4px;
+        border-bottom-right-radius: 4px;
+    }
+
+</style>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
